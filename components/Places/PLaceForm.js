@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, TextInput } from 'react-native';
 
 import { Colors } from '../../constants/colors';
 
-const PLaceForm = () => {
+const PlaceForm = () => {
   const [enteredTitle, setEnteredTitle] = useState('');
 
   const changeTitleHandler = (enteredText) => {
@@ -24,7 +24,7 @@ const PLaceForm = () => {
   );
 };
 
-export default PLaceForm;
+export default PlaceForm;
 
 const styles = StyleSheet.create({
   form: {
