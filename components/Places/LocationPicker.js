@@ -1,64 +1,92 @@
-
 import { StyleSheet, View, Alert, Image, Text } from 'react-native';
-import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from 'expo-location';
-import { useNavigation } from '@react-navigation/native';
+import {
+  getCurrentPositionAsync,
+  useForegroundPermissions,
+  PermissionStatus,
+} from 'expo-location';
+import {
+  useNavigation,
+  useRoute,
+  useIsFocused,
+} from '@react-navigation/native';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Colors } from '../../constants/colors';
 import OutlinedButton from '../UI/OutlinedButton';
 import { getMapPreview } from '../../util/Location';
 
 const LocationPicker = () => {
-  const [pickedLocation, setPickedLocation] = useState()
-  const [locationPermissionInformation, requestPermission] = useForegroundPermissions()
-  
-  const navigation = useNavigation()
+  const [pickedLocation, setPickedLocation] = useState();
+  const navigation = useNavigation();
+  const route = useRoute();
+  const isFocused = useIsFocused();
+
+  const [locationPermissionInformation, requestPermission] =
+    useForegroundPermissions();
+
+  useEffect(() => {
+    if (isFocused && route.params) {
+      const mapPickedLocation = {
+        lat: route.params.pickedLat,
+        lng: route.params.pickedLng,
+      };
+      setPickedLocation(mapPickedLocation);
+    }
+  }, [route, isFocused]);
 
   const verifyPermissions = async () => {
-    if (locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+    if (
+      locationPermissionInformation.status === PermissionStatus.UNDETERMINED
+    ) {
       const permissionResponse = await requestPermission();
 
       return permissionResponse.granted;
     }
 
     if (locationPermissionInformation.status === PermissionStatus.DENIED) {
-      Alert.alert('Permission Denied!', 'You need to grant location permission to use this app');
+      Alert.alert(
+        'Permission Denied!',
+        'You need to grant location permission to use this app'
+      );
 
       return false;
     }
 
     return true;
-  }
+  };
 
   const getLocationHandler = async () => {
-    const hasPermission = await verifyPermissions()
-    
+    const hasPermission = await verifyPermissions();
+
     if (!hasPermission) {
-      return
+      return;
     }
 
-    const location = await getCurrentPositionAsync()
+    const location = await getCurrentPositionAsync();
     setPickedLocation({
       lat: location.coords.latitude,
       lng: location.coords.longitude,
-    })
+    });
   };
 
   const pickOnMapHandler = () => {
-    navigation.navigate('Map')
+    navigation.navigate('Map');
   };
 
-  let locationPreview = <Text>No location selected</Text>
-  
+  let locationPreview = <Text>No location selected</Text>;
+
   if (pickedLocation) {
-    locationPreview = <Image style={styles.image} source={{uri: getMapPreview(pickedLocation.lat, pickedLocation.lng) }} />
+    locationPreview = (
+      <Image
+        style={styles.image}
+        source={{ uri: getMapPreview(pickedLocation.lat, pickedLocation.lng) }}
+      />
+    );
   }
 
   return (
     <View>
-      <View style={styles.mapPreview}>
-        {locationPreview}
-      </View>
+      <View style={styles.mapPreview}>{locationPreview}</View>
       <View style={styles.actions}>
         <OutlinedButton icon='location' onPress={getLocationHandler}>
           Locate User
@@ -93,5 +121,5 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 4,
-  }
+  },
 });
