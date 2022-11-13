@@ -42,7 +42,6 @@ const ImagePicker = () => {
       aspect: [16, 9],
       quality: 0.5,
     });
-    console.log('image assets', image.assets[0].uri);
     setPickedImage(image.assets[0].uri);
   };
 
@@ -73,9 +72,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.primary100,
     borderRadius: 4,
+    // overflow: 'hidden', - adding borderRadius to the image makes this unnecessary
+
   },
   image: {
     width: '100%',
     height: '100%',
+    borderRadius: 4,
   },
 });
