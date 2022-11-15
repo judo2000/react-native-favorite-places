@@ -15,7 +15,7 @@ import { Colors } from '../../constants/colors';
 import OutlinedButton from '../UI/OutlinedButton';
 import { getMapPreview } from '../../util/Location';
 
-const LocationPicker = () => {
+const LocationPicker = ({ onPickLocation }) => {
   const [pickedLocation, setPickedLocation] = useState();
   const navigation = useNavigation();
   const route = useRoute();
@@ -33,6 +33,10 @@ const LocationPicker = () => {
       setPickedLocation(mapPickedLocation);
     }
   }, [route, isFocused]);
+
+  useEffect(() => {
+    onPickLocation(pickedLocation);
+  }, [pickedLocation, onPickLocation]);
 
   const verifyPermissions = async () => {
     if (
@@ -88,10 +92,14 @@ const LocationPicker = () => {
     <View>
       <View style={styles.mapPreview}>{locationPreview}</View>
       <View style={styles.actions}>
-        <OutlinedButton icon='location' onPress={getLocationHandler}>
+        <OutlinedButton
+          width={'45%'}
+          icon='location'
+          onPress={getLocationHandler}
+        >
           Locate User
         </OutlinedButton>
-        <OutlinedButton icon='map' onPress={pickOnMapHandler}>
+        <OutlinedButton width={'45%'} icon='map' onPress={pickOnMapHandler}>
           Pick on Map
         </OutlinedButton>
       </View>
